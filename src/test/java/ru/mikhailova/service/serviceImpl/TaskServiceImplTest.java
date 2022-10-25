@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.mikhailova.domain.Employee;
 import ru.mikhailova.domain.Task;
 import ru.mikhailova.repository.EmployeeRepository;
 import ru.mikhailova.repository.TaskRepository;
@@ -40,6 +41,7 @@ class TaskServiceImplTest {
 
     @Test
     void shouldCreateTask() {
+        given(employeeRepository.findById(any())).willReturn(Optional.ofNullable(addEmployee()));
         service.createTask(addTask(), 1L, List.of(1L));
 
         verify(taskRepository, times(1)).save(any());
@@ -73,7 +75,7 @@ class TaskServiceImplTest {
                 .text("InfoValidation")
                 .build();
 
-        when(taskRepository.findById(any())).thenReturn(Optional.of(new Task()));
+        given(taskRepository.findById(any())).willReturn(Optional.of(new Task()));
 
         service.updateTask(1L, updatedTask);
 
@@ -85,11 +87,18 @@ class TaskServiceImplTest {
 
     Task addTask() {
         return Task.builder()
-                .id(1l)
+                .id(1L)
                 .subject("Task100")
                 .isExecuted(false)
                 .isControlled(false)
                 .text("Validation")
+                .build();
+    }
+
+    Employee addEmployee() {
+        return Employee.builder()
+                .id(1L)
+                .job("Aid")
                 .build();
     }
 }

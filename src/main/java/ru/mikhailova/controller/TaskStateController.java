@@ -11,7 +11,7 @@ import ru.mikhailova.statemachine.service.TaskStateService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/task-state")
+@RequestMapping("/api/v1/task/task-state")
 public class TaskStateController {
 
     private final TaskStateService taskStateService;

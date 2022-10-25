@@ -17,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Task { // TODO Java Doc
-    //TODO sequence check postgres
     /**
      * Идентификатор поручения
      */

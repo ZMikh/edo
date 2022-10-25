@@ -1,13 +1,10 @@
 package ru.mikhailova.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-//TODO eager fetchtype
+//TODO eager fetchtype remove
 /**
  * Сотрудники
  */
@@ -16,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Employee { // TODO Java Doc
     /**
      * Идентификатор сотрудника

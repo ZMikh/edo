@@ -4,3 +4,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+settings:
+  default-page-number: 0
+  default-page-size: 10

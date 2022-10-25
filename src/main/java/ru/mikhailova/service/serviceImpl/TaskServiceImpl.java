@@ -1,5 +1,6 @@
 package ru.mikhailova.service.serviceImpl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static ru.mikhailova.repository.TaskSpecs.*;
 
+@Slf4j
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
@@ -42,12 +44,14 @@ public class TaskServiceImpl implements TaskService {
         task.setAuthor(author);
         List<Employee> executors = employeeRepository.findAllById(executorsId);
         task.setExecutors(executors);
+        log.info("New task from author with id: {} is added", authorId);
         return taskRepository.save(task);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Task getTaskById(Long id) {
+        log.info("Task with id: {} is found", id);
         return taskRepository.findById(id).orElseThrow();
     }
 
@@ -55,6 +59,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
+        log.info("Task with id: {} is deleted", id);
     }
 
     @Transactional
@@ -77,6 +82,7 @@ public class TaskServiceImpl implements TaskService {
             task.setTaskState(updateParam.getTaskState());
         }
         taskRepository.save(task);
+        log.info("Task with id: {} is updated", task.getId());
         return task;
     }
 
@@ -87,14 +93,16 @@ public class TaskServiceImpl implements TaskService {
                                          Integer pageSize,
                                          Boolean isExecuted,
                                          Boolean isControlled,
-                                         String taskName,
+                                         String subject,
                                          Long authorId) {
-        List<Specification<Task>> specificationList = getSpecifications(isExecuted, isControlled, taskName, authorId);
+        List<Specification<Task>> specificationList = getSpecifications(isExecuted, isControlled, subject, authorId);
         PageRequest pageRequest = PageRequest.of(pageNumber == null || pageNumber < 0 ? defaultPageNumber : pageNumber,
                 pageSize == null || pageSize < 0 ? defaultPageSize : pageSize);
         if (specificationList.isEmpty()) {
             return taskRepository.findAll(pageRequest);
         }
+        log.info("Task by following query: subject={}, authorId={}, isExecuted={}, isControlled={} is found",
+                subject, authorId, isExecuted, isControlled);
         return taskRepository.findAll(joinSpecification(specificationList), pageRequest);
     }
 
