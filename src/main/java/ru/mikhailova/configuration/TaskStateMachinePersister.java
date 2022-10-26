@@ -8,6 +8,7 @@ import ru.mikhailova.domain.statemachine.TaskState;
 import java.util.HashMap;
 
 public class TaskStateMachinePersister implements StateMachinePersist<TaskState, TaskEvent, Long> {
+    //TODO HashMap replace to Jpa persister
     private final HashMap<Long, StateMachineContext<TaskState, TaskEvent>> context = new HashMap<>();
 
     @Override

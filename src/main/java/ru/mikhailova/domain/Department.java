@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Department { // TODO Java Doc
+public class Department {
     /**
      * Идентификатор подразделения
      */

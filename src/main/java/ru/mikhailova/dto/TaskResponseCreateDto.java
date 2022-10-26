@@ -4,7 +4,9 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
 @Data
 @ApiModel("Параметры для ответа по созданию поручения")
 public class TaskResponseCreateDto {
@@ -18,4 +20,6 @@ public class TaskResponseCreateDto {
     private List<ExecutorsDto> executors;
     @ApiModelProperty("Текст поручения")
     private String text;
+    @ApiModelProperty("Срок исполнения")
+    private LocalDateTime terms;
 }

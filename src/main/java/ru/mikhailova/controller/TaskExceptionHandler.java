@@ -8,10 +8,8 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.NoSuchElementException;
 
-// TODO сделать ExceptionHandler через @ControlerAdvice
 @ControllerAdvice
-public class TaskExceptionHandler { // TODO Тесты на валидацию работы
-
+public class TaskExceptionHandler {
     @ExceptionHandler({NoSuchElementException.class})
     public ResponseEntity<String> notFound(Exception e, WebRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOTHING THERE");

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UpdateParam { // TODO java doc
+public class UpdateParam {
     /**
      * Сроки исполнения поручения
      */

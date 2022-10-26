@@ -86,7 +86,6 @@ public class TaskServiceImpl implements TaskService {
         return task;
     }
 
-    //TODO page params into yaml
     @Transactional(readOnly = true)
     @Override
     public Page<Task> getAllTasksByQuery(Integer pageNumber,
@@ -126,7 +125,6 @@ public class TaskServiceImpl implements TaskService {
         return specificationList;
     }
 
-    //TODO logs
     private Specification<Task> joinSpecification(List<Specification<Task>> specificationList) {
         Specification<Task> specification = specificationList.get(0);
         for (int i = 1; i < specificationList.size(); i++) {

@@ -1,18 +1,20 @@
 spring:
+  port: 8080
   datasource:
-    url: jdbc:postgresql://localhost:5432/edo
-    username: postgres
-    password: postgres
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/edo}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    show-sql: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 settings:
   default-page-number: 0
   default-page-size: 10
+generate:
+  employee: ${GENERATE_EMPLOYEE:false}
 
 

@@ -10,7 +10,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import ru.mikhailova.dto.TaskRequestCreateDto;
+import org.springframework.test.web.servlet.ResultMatcher;
 import ru.mikhailova.dto.TaskRequestUpdateDto;
 import ru.mikhailova.repository.EmployeeRepository;
 
@@ -31,15 +31,23 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected EmployeeRepository employeeRepository;
 
-    protected <T> T performPostApp(TaskRequestCreateDto taskRequestCreateDto, String url,
+    protected <T> T performPostApp(Object body, String url,
                                    Class<T> responseClassDto) throws Exception {
         ResultActions resultActions = mockMvc.perform(post("/api/v1/task" + url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(taskRequestCreateDto)))
+                        .content(objectMapper.writeValueAsString(body)))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         return objectMapper.readValue(resultActions.andReturn().getResponse().getContentAsString(), responseClassDto);
+    }
+
+    protected void performPostApp(Object body, String url) throws Exception {
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/task" + url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     protected <T> T performGetByIdApp(String url, Class<T> responseClassDto) throws Exception {
@@ -83,12 +91,21 @@ public abstract class AbstractIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    protected ResultActions performExceptionPutApp(TaskRequestUpdateDto taskRequestUpdateDto,
-                                                   String url) throws Exception {
+    protected ResultActions performExceptionPutApp(Object body,
+                                                   String url, ResultMatcher resultMatcher) throws Exception {
         return mockMvc.perform(put("/api/v1/task" + url)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(taskRequestUpdateDto)))
+                        .content(objectMapper.writeValueAsString(body)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(resultMatcher);
+    }
+
+    protected ResultActions performExceptionPostApp(Object body,
+                                                    String url, ResultMatcher resultMatcher) throws Exception {
+        return mockMvc.perform(post("/api/v1/task" + url)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andDo(print())
+                .andExpect(resultMatcher);
     }
 }

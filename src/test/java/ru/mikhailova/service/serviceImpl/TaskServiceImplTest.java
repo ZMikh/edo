@@ -20,7 +20,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceImplTest {
@@ -54,7 +55,6 @@ class TaskServiceImplTest {
         Task task = service.getTaskById(id);
 
         assertThat(id).isEqualTo(task.getId());
-        //TODO get test
     }
 
 

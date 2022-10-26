@@ -4,9 +4,9 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
-//TODO eager fetchtype remove
+
 /**
- * Сотрудники
+ * Сотрудник
  */
 @Entity
 @Setter
@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Employee { // TODO Java Doc
+public class Employee {
     /**
      * Идентификатор сотрудника
      */
@@ -37,7 +37,7 @@ public class Employee { // TODO Java Doc
     /**
      * Должность сотрудника
      */
-    private String job; // TODO сделать просто String и удалить Job
+    private String job;
     /**
      * Подразделение организации
      */

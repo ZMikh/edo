@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Organization { // TODO Java Doc
+public class Organization {
     /**
      * Идентификатор организации
      */

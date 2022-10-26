@@ -1,6 +1,5 @@
 package ru.mikhailova.controller;
 
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,11 +12,10 @@ import ru.mikhailova.dto.TaskResponseCreateDto;
 import ru.mikhailova.mapper.TaskMapper;
 import ru.mikhailova.service.TaskService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO ApplicationRunner
-// TODO написать скрипт миграции, который по умолчанию создать Организацию с несколькими департаментами, в каждом из которых несколько сотрудников
 @RestController
 @RequestMapping("/api/v1/task")
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class TaskController {
 
     @ApiOperation("Создание поручения")
     @PostMapping("/create")
-    public TaskResponseCreateDto create(@RequestBody TaskRequestCreateDto taskRequestCreateDto) {
+    public TaskResponseCreateDto create(@Valid @RequestBody TaskRequestCreateDto taskRequestCreateDto) {
         Task task = service.createTask(mapper.toRequestCreateEntity(taskRequestCreateDto),
                 taskRequestCreateDto.getAuthorId(), taskRequestCreateDto.getExecutorsId());
         return mapper.toResponseCreateDto(task);
@@ -53,9 +51,8 @@ public class TaskController {
         return mapper.toDto(service.updateTask(id, mapper.toUpdateParam(taskRequestUpdateDto)));
     }
 
-    //TODO test for get endpoint
-    @ApiModelProperty("Просмотр поручений по атрибутам с постраничной навигацией")
-    @GetMapping("/get-by-query") // TODO подумать над неймингом
+    @ApiOperation("Просмотр поручений по атрибутам с постраничной навигацией")
+    @GetMapping("/get-by-query")
     public List<TaskDto> getByQuery(@RequestParam(required = false) Integer pageNumber,
                                     @RequestParam(required = false) Integer pageSize,
                                     @RequestParam(required = false) Boolean isExecuted,

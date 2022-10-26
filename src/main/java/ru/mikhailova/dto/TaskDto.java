@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @ApiModel("Поручение")
-public class TaskDto { // TODO подумать над именем
+public class TaskDto {
     @ApiModelProperty("Идентификатор поручения")
     private Long id;
     @ApiModelProperty("Предмет поручения")

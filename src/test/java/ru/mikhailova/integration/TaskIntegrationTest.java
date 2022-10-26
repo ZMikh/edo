@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.mikhailova.domain.Employee;
 import ru.mikhailova.domain.Task;
+import ru.mikhailova.domain.statemachine.TaskState;
 import ru.mikhailova.dto.TaskDto;
 import ru.mikhailova.dto.TaskRequestCreateDto;
 import ru.mikhailova.dto.TaskRequestUpdateDto;
@@ -19,25 +20,22 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TaskIntegrationTest extends AbstractIntegrationTest {
-
     @Autowired
     private TaskRepository taskRepository;
-
-
     private final TypeReference<List<TaskDto>> listTaskDtoTypeReference = new TypeReference<>() {
     };
-
     private Task task;
+    private Employee employee;
 
     @BeforeEach
     void setUp() {
         task = addTask();
         taskRepository.save(task);
 
-        Employee employee = addEmployee();
+        employee = addEmployee();
         employeeRepository.save(employee);
     }
 
@@ -48,23 +46,13 @@ public class TaskIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void couldCreateTask() throws Exception {
-        TaskRequestCreateDto taskRequestCreateDto = new TaskRequestCreateDto();
-        taskRequestCreateDto.setSubject("Attorney for Lalo");
-        taskRequestCreateDto.setAuthorId(1L);
-        taskRequestCreateDto.setExecutorsId(List.of(1L));
-        taskRequestCreateDto.setText("Manage the Defense");
-
-        TaskResponseCreateDto taskResponseCreateDto =
-                performPostApp(taskRequestCreateDto, "/create", TaskResponseCreateDto.class);
-
-        Optional<Task> task = taskRepository.findById(taskResponseCreateDto.getId());
+        Optional<Task> task = taskRepository.findById(performCreateApp().getId());
 
         assertThat(task.isEmpty()).isFalse();
     }
 
     @Test
     void couldUpdateTaskParams() throws Exception {
-
         TaskRequestUpdateDto taskRequestUpdateDto = new TaskRequestUpdateDto();
         taskRequestUpdateDto.setTerms(LocalDateTime.of(2022, 10, 28, 10, 0, 0));
         taskRequestUpdateDto.setIsControlled(Boolean.TRUE);
@@ -131,11 +119,84 @@ public class TaskIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void couldHandleValidationException() throws Exception {
-        ResultActions resultActions = performExceptionPutApp(new TaskRequestUpdateDto(), "/update/100");
+        ResultActions resultActions = performExceptionPutApp(new TaskRequestUpdateDto(), "/update/100", status().isNotFound());
 
         assertThat(resultActions.andReturn().getResponse().getContentAsString()).isEqualTo("NOTHING THERE");
     }
-    // TODO Вытащить запросы в отдельные методы с аргумента
+
+    @Test
+    void machineInProcessEndToEndWorkCheck() throws Exception {
+        Task task = taskRepository.findById(performCreateApp().getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.NEW);
+
+        performPostApp(null, "/state/execute/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.EXECUTED);
+        assertThat(task.getIsExecuted()).isTrue();
+
+        performPostApp(null, "/state/rework/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.REWORKED);
+
+        performPostApp(null, "/state/execute/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.EXECUTED);
+        assertThat(task.getIsExecuted()).isTrue();
+
+        performPostApp(null, "/state/accept/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.ACCEPTED);
+        assertThat(task.getIsControlled()).isTrue();
+    }
+
+    @Test
+    void wrongPassFromNewToAcceptedCheck() throws Exception {
+        Task task = taskRepository.findById(performCreateApp().getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.NEW);
+
+        performExceptionPostApp(null, "/state/accept/" + task.getId(), status().isConflict());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isNotEqualTo(TaskState.ACCEPTED);
+    }
+
+    @Test
+    void wrongPassFromNewToReworkedCheck() throws Exception {
+        Task task = taskRepository.findById(performCreateApp().getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.NEW);
+
+        performExceptionPostApp(null, "/state/rework/" + task.getId(), status().isConflict());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isNotEqualTo(TaskState.REWORKED);
+    }
+
+    @Test
+    void wrongPassFromReworkedToAcceptedCheck() throws Exception {
+        Task task = taskRepository.findById(performCreateApp().getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.NEW);
+
+        performPostApp(null, "/state/execute/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.EXECUTED);
+
+        performPostApp(null, "/state/rework/" + task.getId());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isEqualTo(TaskState.REWORKED);
+
+        performExceptionPostApp(null, "/state/accept/" + task.getId(), status().isConflict());
+        task = taskRepository.findById(task.getId()).orElseThrow();
+        assertThat(task.getTaskState()).isNotEqualTo(TaskState.ACCEPTED);
+    }
+
+    private TaskResponseCreateDto performCreateApp() throws Exception {
+        TaskRequestCreateDto taskRequestCreateDto = new TaskRequestCreateDto();
+        taskRequestCreateDto.setExecutorsId(List.of(employee.getId()));
+        taskRequestCreateDto.setSubject("TestSubject");
+        taskRequestCreateDto.setAuthorId(employee.getId());
+
+        return performPostApp(taskRequestCreateDto, "/create", TaskResponseCreateDto.class);
+    }
+
+
     Task addTask() {
         return Task.builder()
                 .isControlled(false)
@@ -149,5 +210,4 @@ public class TaskIntegrationTest extends AbstractIntegrationTest {
                 .lastName("Goodman")
                 .build();
     }
-
 }

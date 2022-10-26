@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task { // TODO Java Doc
+public class Task {
     /**
      * Идентификатор поручения
      */

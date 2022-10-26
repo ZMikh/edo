@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-edo
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  edo:
+    build:
+      context: .
+    container_name: edo
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "jdbc:postgresql://postgres:5432/"
+      DATABASE_USERNAME: "postgres"
+      DATABASE_PASSWORD: "postgres"
+      SPRING_PROFILES_ACTIVE: "local"
+      GENERATE_EMPLOYEE: true

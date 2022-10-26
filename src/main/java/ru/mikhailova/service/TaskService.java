@@ -8,26 +8,33 @@ import java.util.List;
 /**
  * Сервис Поручение
  */
-public interface TaskService { //TODO Java Doc
+public interface TaskService {
     /**
      * Создать поручение
+     *
      * @param task
      * @return сущность Поручение
      */
     Task createTask(Task task, Long authorId, List<Long> executorsId);
+
     /**
      * Получить поручение по идентификатору поручения
+     *
      * @param id
      * @return сущность Поручение
      */
     Task getTaskById(Long id);
+
     /**
      * Удалить поручение
+     *
      * @param id
      */
     void deleteTask(Long id);
+
     /**
      * Обновить поручение
+     *
      * @param id
      * @param updateParam
      * @return сущность Поручение

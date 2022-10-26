@@ -18,8 +18,6 @@ import ru.mikhailova.statemachine.action.AcceptedAction;
 import ru.mikhailova.statemachine.action.ExecutedAction;
 import ru.mikhailova.statemachine.action.ReworkedAction;
 
-import java.util.EnumSet;
-
 @Configuration
 @EnableStateMachineFactory
 @RequiredArgsConstructor
@@ -31,8 +29,9 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<TaskSt
         states
                 .withStates()
                 .initial(TaskState.NEW)
-                .end(TaskState.ACCEPTED)
-                .states(EnumSet.allOf(TaskState.class));
+                .state(TaskState.REWORKED)
+                .state(TaskState.EXECUTED)
+                .end(TaskState.ACCEPTED);
     }
 
     @Override
@@ -54,20 +53,20 @@ public class StateMachineConfig extends EnumStateMachineConfigurerAdapter<TaskSt
                 .and()
                 .withExternal()
                 .source(TaskState.EXECUTED)
-                .target(TaskState.ACCEPTED)
-                .event(TaskEvent.ACCEPT)
-                .action(acceptedAction(taskService))
-
-                .and()
-                .withExternal()
-                .source(TaskState.EXECUTED)
                 .target(TaskState.REWORKED)
-                .event(TaskEvent.REWORK)
+                .event(TaskEvent.TO_REWORK)
                 .action(reworkedAction(taskService))
 
                 .and()
                 .withExternal()
                 .source(TaskState.REWORKED)
+                .target(TaskState.EXECUTED)
+                .event(TaskEvent.REWORKED)
+                .action(executedAction(taskService))
+
+                .and()
+                .withExternal()
+                .source(TaskState.EXECUTED)
                 .target(TaskState.ACCEPTED)
                 .event(TaskEvent.ACCEPT)
                 .action(acceptedAction(taskService));

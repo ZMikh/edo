@@ -1,6 +1,5 @@
 package ru.mikhailova.integration;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +53,13 @@ public class TaskStateMachineTest extends AbstractIntegrationTest {
                     .expectVariable("TASK_ID")
                 .and()
                 .step()
-                    .sendEvent(TaskEvent.REWORK)
+                    .sendEvent(TaskEvent.TO_REWORK)
                     .expectStateChanged(1)
                     .expectState(TaskState.REWORKED)
                 .and()
                 .build()
                 .test();
     }
+
+
 }
