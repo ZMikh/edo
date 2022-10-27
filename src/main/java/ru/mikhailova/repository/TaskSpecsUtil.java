@@ -3,7 +3,8 @@ package ru.mikhailova.repository;
 import org.springframework.data.jpa.domain.Specification;
 import ru.mikhailova.domain.Task;
 
-public class TaskSpecs {
+// TODO реализовать не используя хардкод имени поля
+public class TaskSpecsUtil {
     public static Specification<Task> isExecuted(boolean state) {
         return (root, query, builder) -> builder.equal(root.get("isExecuted"), state);
     }

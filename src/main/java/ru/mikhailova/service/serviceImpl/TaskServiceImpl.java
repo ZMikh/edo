@@ -17,7 +17,7 @@ import ru.mikhailova.service.UpdateParam;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.mikhailova.repository.TaskSpecs.*;
+import static ru.mikhailova.repository.TaskSpecsUtil.*;
 
 @Slf4j
 @Service
@@ -95,8 +95,9 @@ public class TaskServiceImpl implements TaskService {
                                          String subject,
                                          Long authorId) {
         List<Specification<Task>> specificationList = getSpecifications(isExecuted, isControlled, subject, authorId);
-        PageRequest pageRequest = PageRequest.of(pageNumber == null || pageNumber < 0 ? defaultPageNumber : pageNumber,
-                pageSize == null || pageSize < 0 ? defaultPageSize : pageSize);
+        Integer pageRequestNumber = pageNumber == null || pageNumber < 0 ? defaultPageNumber : pageNumber;
+        Integer pageRequestSize = pageSize == null || pageSize < 0 ? defaultPageSize : pageSize;
+        PageRequest pageRequest = PageRequest.of(pageRequestNumber, pageRequestSize);
         if (specificationList.isEmpty()) {
             return taskRepository.findAll(pageRequest);
         }
