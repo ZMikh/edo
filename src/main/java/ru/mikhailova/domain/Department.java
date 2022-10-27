@@ -39,12 +39,12 @@ public class Department {
     /**
      * Список сотрудников подразделения
      */
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Employee> employees;
     /**
      * Наименование организации
      */
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id")
     private Organization organization;
 }

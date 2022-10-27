@@ -43,6 +43,6 @@ public class Organization {
     /**
      * Список подразделений организации
      */
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "organization")
+    @OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Department> departments;
 }

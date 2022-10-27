@@ -14,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(name = "Employee.withDepartment",
+    attributeNodes = @NamedAttributeNode(value = "department", subgraph = "department.organization"),
+    subgraphs = @NamedSubgraph(name = "department.organization", attributeNodes = @NamedAttributeNode("organization"))
+)
 public class Employee {
     /**
      * Идентификатор сотрудника
@@ -41,17 +45,17 @@ public class Employee {
     /**
      * Подразделение организации
      */
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
     /**
      * Список созданных сотрудником поручений
      */
-    @OneToMany(mappedBy = "author", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     private List<Task> createdTasks;
     /**
      * Список поручений на выполнении у сотрудника
      */
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "executors")
+    @ManyToMany(mappedBy = "executors", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Task> assignedTasks;
 }

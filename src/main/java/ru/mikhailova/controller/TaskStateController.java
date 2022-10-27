@@ -17,7 +17,7 @@ import ru.mikhailova.statemachine.service.TaskStateService;
 public class TaskStateController {
     private final TaskStateService taskStateService;
 
-    @ApiOperation("Проверка выполнения поручения")
+    @ApiOperation("Выполнение поручения")
     @PostMapping("/execute/{id}")
     public ResponseEntity<Void> execute(@PathVariable Long id) {
         boolean executed = taskStateService.executed(id);
@@ -27,7 +27,7 @@ public class TaskStateController {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @ApiOperation("Проверка доработки поручения")
+    @ApiOperation("Доработка поручения")
     @PostMapping("/rework/{id}")
     public ResponseEntity<Void> rework(@PathVariable Long id) {
         boolean reworked = taskStateService.reworked(id);
@@ -37,7 +37,7 @@ public class TaskStateController {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
-    @ApiOperation("Проверка приемки поручения")
+    @ApiOperation("Приемка поручения")
     @PostMapping("/accept/{id}")
     public ResponseEntity<Void> accepted(@PathVariable Long id) {
         boolean accepted = taskStateService.accepted(id);

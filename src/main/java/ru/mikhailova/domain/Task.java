@@ -16,6 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(name = "Task.withEmployees", attributeNodes = {
+        @NamedAttributeNode(value = "author"),
+        @NamedAttributeNode(value = "executors")})
 public class Task {
     /**
      * Идентификатор поручения
@@ -31,13 +34,13 @@ public class Task {
     /**
      * Автор поручения
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_author_id")
     private Employee author;
     /**
      * Исполнители поручения
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "employee_executors_task",
             joinColumns = @JoinColumn(name = "task_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id"))
